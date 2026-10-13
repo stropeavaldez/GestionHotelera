@@ -9,35 +9,47 @@ public class Hotel {
 	private String nombre;
 	private String direccion;
 	private float cantEstrellas;
+	
+	// Atributo ESTÁTICO
+	private static int cantHotel = 0;
+	
 	private List<Puntuacion> listPuntuaciones;
 	private List<Habitacion> listHabitaciones;
 	
-	public Hotel (String nombre, String direccion) {
+	public Hotel(String nombre, String direccion) {
 		this.nombre = nombre;
 		this.direccion = direccion;
 		this.cantEstrellas = 0;
 		this.listPuntuaciones = new ArrayList<>();
 		this.listHabitaciones = new ArrayList<>();
+		
+		// Incremento automático del contador global de la cadena
+		cantHotel++;
+	}
+
+	// Método ESTÁTICO de consulta
+	public static int getCantHotel() {
+		return cantHotel;
 	}
 
 	public String getNombre() {
 		return nombre;
 	}
-	public void setNombre (String nombre) {
+	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
 	
 	public String getDireccion() {
 		return direccion;
 	}
-	public void setDireccion (String direccion) {
+	public void setDireccion(String direccion) {
 		this.direccion = direccion;
 	}
 	
 	public float getCantEstrellas() {
 		return cantEstrellas;
 	}
-	public void setCantEstrellas (float cantEstrellas) {
+	public void setCantEstrellas(float cantEstrellas) {
 		this.cantEstrellas = cantEstrellas;
 	}
 	
@@ -56,8 +68,7 @@ public class Hotel {
 		}
 		
 		int suma = 0;
-		
-		for (Puntuacion p: listPuntuaciones) {
+		for (Puntuacion p : listPuntuaciones) {
 			suma += p.getEstrellas();
 		}
 		
