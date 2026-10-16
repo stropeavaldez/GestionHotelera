@@ -22,7 +22,7 @@ public class Main {
 		
 		// Creación de Empleado y Huésped
 		Empleado pr101 = new Empleado("Facundo", "Romano", "29290290", LocalDate.of(1985, 1, 11), TipoCargo.RECEPCION, 85000.0f);
-		Huesped ph101 = new Huesped("Santiago", "Tropea", "39390801", LocalDate.of(1995, 11, 21), 1);
+		Huesped ph101 = new Huesped("Santiago", "Tropea", "39390801", LocalDate.of(1995, 11, 21));
 		
 		int edadEmpleado = pr101.calcularEdad();
 		int edadHuesped = ph101.calcularEdad();
@@ -34,7 +34,7 @@ public class Main {
 		
 		System.out.println("=== DATOS HUESPED ===");
 		System.out.println("Nombre: " + ph101.getNombre() + " " + ph101.getApellido());
-		System.out.println("Reserva: " + ph101.getNumReserva());
+		System.out.println("Reserva: " + ph101.getListReservas());
 		System.out.println("Edad: " + edadHuesped + " años");
 		
 	}
