@@ -4,74 +4,98 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gestionHotelera.gestion.Puntuacion;
+import com.gestionHotelera.personas.Huesped; // Import necesario para los suscriptores
 
 public class Hotel {
+	private static Hotel instancia;
+
 	private String nombre;
 	private String direccion;
 	private float cantEstrellas;
-	
-	// Atributo ESTÁTICO
 	private static int cantHotel = 0;
 	
 	private List<Puntuacion> listPuntuaciones;
 	private List<Habitacion> listHabitaciones;
 	
-	public Hotel(String nombre, String direccion) {
+	// NUEVO: Lista para almacenar los suscriptores (Patrón Observer)
+	private List<Huesped> suscriptores;
+
+	private Hotel(String nombre, String direccion) {
 		this.nombre = nombre;
 		this.direccion = direccion;
 		this.cantEstrellas = 0;
 		this.listPuntuaciones = new ArrayList<>();
 		this.listHabitaciones = new ArrayList<>();
+		this.suscriptores = new ArrayList<>(); // Inicializamos la lista de suscriptores
 		
-		// Incremento automático del contador global de la cadena
 		cantHotel++;
 	}
 
-	// Método ESTÁTICO de consulta
-	public static int getCantHotel() {
-		return cantHotel;
+	public static Hotel getInstancia(String nombre, String direccion) {
+		if (instancia == null) {
+			instancia = new Hotel(nombre, direccion);
+		}
+		return instancia;
 	}
 
-	public String getNombre() {
-		return nombre;
+	public static Hotel getInstancia() {
+		if (instancia == null) {
+			instancia = new Hotel("Hotel Central", "Av. Principal 100");
+		}
+		return instancia;
 	}
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+
+	// =========================================================================
+	// MÉTODOS DEL PATRÓN OBSERVER
+	// =========================================================================
 	
-	public String getDireccion() {
-		return direccion;
+	public void suscribir(Huesped huesped) {
+		if (huesped != null && !suscriptores.contains(huesped)) {
+			suscriptores.add(huesped);
+		}
 	}
-	public void setDireccion(String direccion) {
-		this.direccion = direccion;
+
+	public void desuscribir(Huesped huesped) {
+		suscriptores.remove(huesped);
 	}
-	
-	public float getCantEstrellas() {
-		return cantEstrellas;
+
+	/**
+	 * Notifica a los suscriptores que una habitación fue liberada.
+	 * REQUISITO: Validar que el huésped que deja la habitación NO reciba la notificación.
+	 */
+	public void notificarHabitacionLiberada(Habitacion habitacion, Huesped huespedQueSale) {
+		System.out.println("\n--- [NOTIFICACIÓN] Habitación liberada en " + nombre + " ---");
+		for (Huesped suscriptor : suscriptores) {
+			// Validación solicitada: si el suscriptor es distinto al huésped que sale, se le notifica
+			if (!suscriptor.equals(huespedQueSale)) {
+				System.out.println("-> Enviando aviso a " + suscriptor.getNombre() + " " + suscriptor.getApellido() + 
+								   ": La habitación N° " + habitacion.getNumero() + 
+								   " (" + habitacion.getTipo() + ") está disponible. Costo por noche: $" + habitacion.getPrecio());
+			}
+		}
+		System.out.println("----------------------------------------------------------\n");
 	}
-	public void setCantEstrellas(float cantEstrellas) {
-		this.cantEstrellas = cantEstrellas;
-	}
-	
-	public List<Puntuacion> getListPuntuaciones() {
-		return listPuntuaciones;
-	}
-	
-	public List<Habitacion> getListHabitaciones() {
-		return listHabitaciones;
-	}
+
+	// --- RESTO DE TUS MÉTODOS EXISTENTES ---
+	public static int getCantHotel() { return cantHotel; }
+	public String getNombre() { return nombre; }
+	public void setNombre(String nombre) { this.nombre = nombre; }
+	public String getDireccion() { return direccion; }
+	public void setDireccion(String direccion) { this.direccion = direccion; }
+	public float getCantEstrellas() { return cantEstrellas; }
+	public void setCantEstrellas(float cantEstrellas) { this.cantEstrellas = cantEstrellas; }
+	public List<Puntuacion> getListPuntuaciones() { return listPuntuaciones; }
+	public List<Habitacion> getListHabitaciones() { return listHabitaciones; }
 	
 	public float calcularPromedioEstrellas() {
 		if (listPuntuaciones.isEmpty()) {
 			this.cantEstrellas = 0.0f;
 			return 0.0f;
 		}
-		
 		int suma = 0;
 		for (Puntuacion p : listPuntuaciones) {
 			suma += p.getEstrellas();
 		}
-		
 		this.cantEstrellas = (float) suma / listPuntuaciones.size();
 		return this.cantEstrellas;
 	}

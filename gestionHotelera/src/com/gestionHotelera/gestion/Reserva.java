@@ -16,21 +16,23 @@ public class Reserva {
 	private EstadoReserva estado;
 	private Puntuacion puntuacion;
 	
-	public Reserva(int numReserva, LocalDate fecha, Huesped huesped, Habitacion habitacion, Empleado empleadoRecepcion) {
-		this.numReserva = numReserva;
-		this.fecha = fecha;
-		this.huesped = huesped;
-		this.habitacion = habitacion;
-		this.empleadoRecepcion = empleadoRecepcion;
-		this.estado = EstadoReserva.PENDIENTE;
-		this.puntuacion = null;
+	// Constructor PRIVADO: Solo puede ser invocado desde el Builder
+	private Reserva(Builder builder) {
+		this.numReserva = builder.numReserva;
+		this.fecha = builder.fecha;
+		this.huesped = builder.huesped;
+		this.habitacion = builder.habitacion;
+		this.empleadoRecepcion = builder.empleadoRecepcion;
+		this.estado = builder.estado;
+		this.puntuacion = builder.puntuacion;
 		
 		// Vinculación automática en la lista de reservas del huésped (1..*)
-		if (huesped != null) {
-			huesped.agregarReserva(this);
+		if (this.huesped != null) {
+			this.huesped.agregarReserva(this);
 		}
 	}
 
+	// --- GETTERS Y SETTERS ---
 	public int getNumReserva() {
 		return numReserva;
 	}
@@ -78,5 +80,61 @@ public class Reserva {
 	}
 	public void setPuntuacion(Puntuacion puntuacion) {
 		this.puntuacion = puntuacion;
+	}
+
+	// =========================================================================
+	// CLASE BUILDER (Patrón Builder)
+	// =========================================================================
+	public static class Builder {
+		private int numReserva;
+		private LocalDate fecha;
+		private Huesped huesped;
+		private Habitacion habitacion;
+		private Empleado empleadoRecepcion;
+		private EstadoReserva estado = EstadoReserva.PENDIENTE; // Valor por defecto
+		private Puntuacion puntuacion = null;                   // Valor por defecto
+
+		public Builder setNumReserva(int numReserva) {
+			this.numReserva = numReserva;
+			return this;
+		}
+
+		public Builder setFecha(LocalDate fecha) {
+			this.fecha = fecha;
+			return this;
+		}
+
+		public Builder setHuesped(Huesped huesped) {
+			this.huesped = huesped;
+			return this;
+		}
+
+		public Builder setHabitacion(Habitacion habitacion) {
+			this.habitacion = habitacion;
+			return this;
+		}
+
+		public Builder setEmpleadoRecepcion(Empleado empleadoRecepcion) {
+			this.empleadoRecepcion = empleadoRecepcion;
+			return this;
+		}
+
+		public Builder setEstadoReserva(EstadoReserva estado) {
+			this.estado = estado;
+			return this;
+		}
+
+		public Builder setPuntuacion(Puntuacion puntuacion) {
+			this.puntuacion = puntuacion;
+			return this;
+		}
+
+		// Método final que construye y retorna la Reserva aplicando el constructor privado
+		public Reserva build() {
+			if (fecha == null) {
+				throw new IllegalStateException("La fecha de la reserva es obligatoria.");
+			}
+			return new Reserva(this);
+		}
 	}
 }
